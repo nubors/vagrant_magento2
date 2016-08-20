@@ -8,3 +8,8 @@
   become: yes
   become_method: sudo
   service: name=redis-server state=restarted
+
+- name: restart varnish
+  become: yes
+  become_method: sudo
+  service: name=varnish state=restarted
