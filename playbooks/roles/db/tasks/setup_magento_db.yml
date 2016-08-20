@@ -1,0 +1,34 @@
+---
+- name: ensure that the database exists
+  mysql_db:
+    login_user: "{{ mysql_root_user_name }}"
+    login_password: "{{ mysql_root_user_pw }}"
+    name: "{{ magento_db_name }}"
+    state: present
+
+- name: ensure that the database user exists
+  mysql_user:
+    name: "{{ magento_db_user_name }}"
+    host: localhost
+    password: "{{ magento_db_user_pw }}"
+    priv: "{{ magento_db_name }}.*:ALL"
+    state: present
+    login_user: "{{ mysql_root_user_name }}"
+    login_password: "{{ mysql_root_user_pw }}"
+
+- name: ensure that the integration test database exists
+  mysql_db:
+    login_user: "{{ mysql_root_user_name }}"
+    login_password: "{{ mysql_root_user_pw }}"
+    name: "{{ magento_test_db_name }}"
+    state: present
+
+- name: ensure that the database user has permission to the test db
+  mysql_user:
+    name: "{{ magento_db_user_name }}"
+    host: localhost
+    priv: "{{ magento_test_db_name }}.*:ALL"
+    append_privs: yes
+    state: present
+    login_user: "{{ mysql_root_user_name }}"
+    login_password: "{{ mysql_root_user_pw }}"

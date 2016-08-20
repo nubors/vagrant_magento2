@@ -1,0 +1,72 @@
+---
+- name: ensure that php7.0 is compiled by phpfarm
+  become: yes
+  become_method: sudo
+  command: /opt/phpfarm/src/main.sh 7.0.6
+
+- name: run phpize php7.0 xdebug compile step
+  become: yes
+  become_method: sudo
+  command: /opt/phpfarm/inst/php-7.0.6/bin/phpize
+  args:
+    chdir: /usr/lib/xdebug
+  
+- name: run configure php7.0 xdebug compile step
+  become: yes
+  become_method: sudo
+  command: ./configure --with-php-config=/opt/phpfarm/inst/php-7.0.6/bin/php-config
+  args:
+    chdir: /usr/lib/xdebug
+
+- name: run make php7.0 xdebug compile step
+  become: yes
+  become_method: sudo
+  make: chdir=/usr/lib/xdebug
+
+- name: run make install target php7.0 xdebug compile step
+  become: yes
+  become_method: sudo
+  make: chdir=/usr/lib/xdebug target=install
+
+- name: ensure that php7.0 ini file is present
+  become: yes
+  become_method: sudo
+  copy:
+    src: php7.0.6.ini
+    dest: /opt/phpfarm/inst/php-7.0.6/etc/php.ini
+
+- name: backup php7.0 ini file to lib
+  become: yes
+  become_method: sudo
+  copy:
+    remote_src: true
+    src: /opt/phpfarm/inst/php-7.0.6/etc/php.ini
+    dest: /opt/phpfarm/inst/php-7.0.6/lib/php.ini
+
+- name: ensure that php7.0 php-fpm config file is present
+  become: yes
+  become_method: sudo
+  copy:
+    remote_src: yes
+    src: /opt/phpfarm/inst/php-7.0.6/etc/php-fpm.conf.default
+    dest: /opt/phpfarm/inst/php-7.0.6/etc/php-fpm.conf
+
+- name: ensure that php7.0 pool config file is present
+  become: yes
+  become_method: sudo
+  copy:
+    src: php-fpm-7.0.www.conf
+    dest: /opt/phpfarm/inst/php-7.0.6/etc/php-fpm.d/www.conf
+
+- name: ensure that php7.0 initd script is present
+  become: yes
+  become_method: sudo
+  copy:
+    src: php-init.d-7.0.sh
+    dest: /etc/init.d/php-7.0
+    mode: 0755
+
+- name: ensure that initd script is set in rc.d configuration
+  become: yes
+  become_method: sudo
+  command: update-rc.d php-7.0 defaults

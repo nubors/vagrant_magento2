@@ -1,0 +1,10 @@
+.DS_Store
+.idea
+.vagrant
+/config.yml
+example.com/
+*.swp
+playbooks/*.retry
+playbooks/hosts
+playbooks/group_vars/all.yml
+playbooks/roles/web/files/auth.json

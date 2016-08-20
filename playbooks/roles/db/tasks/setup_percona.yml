@@ -1,0 +1,62 @@
+---
+- name: ensure that percona GPG key is present
+  become: yes
+  become_method: sudo
+  apt_key:
+    keyserver: keys.gnupg.net
+    id: 1C4CBDCDCD2EFD2A
+    state: present
+
+- name: ensure that the percona root password package selection is set
+  become: yes
+  become_method: sudo
+  debconf:
+    name: percona-server-server-5.6
+    question: "percona-server-server/root_password"
+    value: root
+    vtype: password
+
+- name: ensure that the percona root password again package selection is set
+  become: yes
+  become_method: sudo
+  debconf:
+    name: percona-server-server-5.6
+    question: "percona-server-server/root_password_again"
+    value: root
+    vtype: password
+
+- name: ensure that percona repos are added to the apt repos list
+  become: yes
+  become_method: sudo
+  copy:
+    src: apt_sources.list
+    dest: /etc/apt/sources.list
+  environment:
+    debian_frontend: "noninteractive"
+
+- name: ensure that percona is present
+  become: yes
+  become_method: sudo
+  apt: name={{ item }} state=present update_cache=yes
+  with_items:
+    - percona-server-server-5.6
+    - percona-server-client-5.6
+
+- name: ensure that mysql config file is present
+  become: yes
+  become_method: sudo
+  copy:
+    src: my.cnf
+    dest: /etc/mysql/my.cnf
+  notify: restart mysql
+
+- name: ensure that mysql root user has all permissions on all databases
+  mysql_user: name="{{ mysql_root_user_name }}" priv=*.*:ALL host="%" login_user="{{ mysql_root_user_name }}" login_password="{{ mysql_root_user_pw }}" state=present
+
+- name: ensure that mysql-sync utility script is present
+  become: yes
+  become_method: sudo
+  copy:
+    src: mysql-sync.sh
+    dest: /usr/local/bin/mysql-sync
+    mode: 0755

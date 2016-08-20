@@ -1,0 +1,11 @@
+---
+- name: ensure that Python MySQL-python module's dependencies exist
+  become: yes
+  become_method: sudo
+  apt: name={{ item }} state=present update_cache=yes
+  with_items:
+    - libmysqlclient-dev
+    - python-mysqldb
+
+- include: setup_percona.yml
+- include: setup_magento_db.yml

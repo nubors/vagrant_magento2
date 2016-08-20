@@ -1,0 +1,15 @@
+---
+
+# Change these on initial setup of the VM
+project_root: /srv/www/example.com/public_html
+magento_db_name: example
+magento_db_user_name: example
+magento_db_user_pw: example
+magento_test_db_name: example_integration_tests
+
+# You don't need to change these values unless you want to
+mysql_root_user_name: root
+mysql_root_user_pw: root
+apache_server_name: example.com
+php_fpm_port: 9006
+php_fpm_host: 127.0.0.1

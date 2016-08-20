@@ -1,0 +1,58 @@
+---
+- name: retrieve the composer setup script
+  command: /opt/phpfarm/inst/php-7.0.6/bin/php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+  args:
+    chdir: /home/vagrant
+
+- name: retrieve the setup script hash signature
+  command: curl https://composer.github.io/installer.sig
+  register: setup_script_hash
+
+- name: ensure that composer setup file matches SHA384 hash
+  command: /opt/phpfarm/inst/php-7.0.6/bin/php -r "if (hash_file('SHA384', 'composer-setup.php') === '{{ setup_script_hash.stdout }}') { echo 'Installer verified'; } else { echo 'Installer corrupt'; } echo PHP_EOL;"
+  args:
+    chdir: /home/vagrant
+  register: hash_check_result
+
+- name: remove the composer setup script if the hash check fails
+  command: /opt/phpfarm/inst/php-7.0.6/bin/php -r "unlink('composer-setup.php');"
+  args:
+    chdir: /home/vagrant
+  when: hash_check_result.stdout == "Installer corrupt"
+
+- name: throw ansible error message and stop this run if the hash check fails
+  fail: msg="Failed to confirm that the composer setup script matched the valid SHA hash."
+  when: hash_check_result.stdout == "Installer corrupt"
+
+- name: run the composer setup script
+  command: /opt/phpfarm/inst/php-7.0.6/bin/php /home/vagrant/composer-setup.php
+
+- name: remove the composer setup script
+  command: /opt/phpfarm/inst/php-7.0.6/bin/php -r "unlink('composer-setup.php');"
+  args:
+    chdir: /home/vagrant
+
+- name: move the generated composer executable to /usr/local/bin
+  become: yes
+  become_method: sudo
+  command: mv /home/vagrant/composer.phar /usr/local/bin/composer
+
+- name: ensure that composer is executable
+  become: yes
+  become_method: sudo
+  file: path=/usr/local/bin/composer mode=0755
+
+- name: setup n98-magerun2 cli utility
+  command: curl -O https://files.magerun.net/n98-magerun2.phar
+  args:
+    chdir: /home/vagrant
+
+- name: move the generated n98-magerun2 executable to /usr/local/bin
+  become: yes
+  become_method: sudo
+  command: mv /home/vagrant/n98-magerun2.phar /usr/local/bin/n98-magerun2
+
+- name: ensure that n98-magerun2 is executable
+  become: yes
+  become_method: sudo
+  file: path=/usr/local/bin/n98-magerun2 mode=0755

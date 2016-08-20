@@ -1,0 +1,12 @@
+---
+- name: ensure composer home directory exists
+  file:
+    path: /home/vagrant/.composer
+    owner: vagrant
+    group: vagrant
+    state: directory
+
+- name: ensure composer repo credentials file exists
+  copy:
+    src: auth.json
+    dest: /home/vagrant/.composer/auth.json

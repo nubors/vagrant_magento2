@@ -1,0 +1,70 @@
+---
+- name: ensure that apache is present
+  become: yes
+  become_method: sudo
+  apt: name=apache2 state=present update_cache=yes
+
+- name: ensure that apache is using mpm_event
+  become: yes
+  become_method: sudo
+  apache2_module: name={{ item }} state=absent
+  with_items:
+    - mpm_prefork
+    - mpm_worker
+
+- name: ensure that necessary apache modules are enabled
+  become: yes
+  become_method: sudo
+  apache2_module: name={{ item }} state=present
+  with_items:
+    - rewrite
+    - actions
+    - ssl
+    - headers
+    - proxy_fcgi
+
+- name: ensure that apache ports.conf is present
+  become: yes
+  become_method: sudo
+  copy:
+    src: ports.conf
+    dest: /etc/apache2/ports.conf
+
+- name: ensure the vhost utility script is present
+  become: yes
+  become_method: sudo
+  copy:
+    src: vhost.sh
+    dest: /usr/local/bin/vhost
+    mode: 0755
+
+- name: ensure that the apache2 envvars file exists
+  become: yes
+  become_method: sudo
+  copy:
+    src: envvars
+    dest: /etc/apache2/envvars
+  notify: reload apache
+
+- name: ensure that apache vhost exists
+  become: yes
+  become_method: sudo
+  template:
+    src: example.com.conf.j2
+    dest: /etc/apache2/sites-available/example.com.conf
+
+- name: ensure that apache vhost is enabled
+  become: yes
+  become_method: sudo
+  file:
+    src: /etc/apache2/sites-available/example.com.conf
+    path: /etc/apache2/sites-enabled/example.com.conf
+    state: link
+
+- name: ensure default apache vhost isn't enabled
+  become: yes
+  become_method: sudo
+  file:
+    path: /etc/apache2/sites-enabled/000-default.conf
+    state: absent
+  notify: reload apache

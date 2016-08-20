@@ -1,0 +1,30 @@
+<VirtualHost *:8090>
+    ServerAdmin webmaster@localhost
+    ServerName {{ apache_server_name }}
+    
+
+    DocumentRoot /srv/www/{{ apache_server_name }}/public_html
+
+    # PHP proxy specifications
+    <Proxy fcgi://{{ php_fpm_host }}:{{ php_fpm_port }}>
+        ProxySet timeout=1800
+    </Proxy>
+
+    ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://{{ php_fpm_host }}:{{ php_fpm_port }}/srv/www/{{ apache_server_name }}/public_html/$1
+
+    <Directory /srv/www/{{ apache_server_name }}/public_html>
+        Options -Indexes +FollowSymLinks +MultiViews
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/{{ apache_server_name }}-error.log
+
+    # Possible values include: debug, info, notice, warn, error, crit,
+    # alert, emerg.
+    LogLevel warn
+
+    CustomLog ${APACHE_LOG_DIR}/{{ apache_server_name }}-access.log combined
+
+
+</VirtualHost>

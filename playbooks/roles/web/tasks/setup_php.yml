@@ -1,0 +1,15 @@
+---
+- include: setup_php5.6.yml
+- include: setup_php7.0.yml
+
+- name: add phpfarm to system path
+  become: yes
+  become_method: sudo
+  copy:
+    src: environment
+    dest: /etc/environment
+
+- name: set default php version to 5.6
+  become: yes
+  become_method: sudo
+  command: /opt/phpfarm/inst/bin/switch-phpfarm 5.6.20

@@ -1,0 +1,24 @@
+---
+- name: ensure that local apt cache is up to date
+  become: yes
+  become_method: sudo
+  apt: update_cache=yes
+
+- name: ensure that utility packages are present
+  become: yes
+  become_method: sudo
+  apt: name={{ item }} state=present
+  with_items:
+    - git
+    - htop
+    - smem
+    - strace
+    - lynx
+    - dos2unix
+
+- name: ensure that hosts files is present
+  become: yes
+  become_method: sudo
+  copy:
+    src: hosts
+    dest: /etc/hosts

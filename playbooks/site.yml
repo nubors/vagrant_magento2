@@ -1,0 +1,9 @@
+---
+- name: Provisions site-specific configuration for the ARDN-M2 project
+  hosts: all
+  user: vagrant
+
+  roles:
+    - common
+    - web
+    - db

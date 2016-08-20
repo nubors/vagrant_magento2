@@ -1,0 +1,8 @@
+---
+- include: setup_environment.yml
+- include: setup_apache.yml
+- include: setup_composer.yml
+- include: setup_php.yml
+- include: setup_redis.yml
+- include: setup_varnish.yml
+- include: setup_tools.yml

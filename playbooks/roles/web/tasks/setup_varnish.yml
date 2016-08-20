@@ -1,0 +1,19 @@
+---
+- name: ensure that varnish is present
+  become: yes
+  become_method: sudo
+  apt: name=varnish state=present update_cache=yes
+
+- name: ensure that varnish config is present
+  become: yes
+  become_method: sudo
+  copy:
+    src: default.vcl
+    dest: /etc/varnish/default.vcl
+
+- name: ensure that varnish defaults file is present
+  become: yes
+  become_method: sudo
+  copy:
+    src: varnish_defaults
+    dest: /etc/default/varnish

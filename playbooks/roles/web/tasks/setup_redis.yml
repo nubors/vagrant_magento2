@@ -1,0 +1,21 @@
+---
+- name: ensure that redis is present
+  become: yes
+  become_method: sudo
+  apt: name=redis-server state=present update_cache=yes
+
+- name: ensure that redis config file is present
+  become: yes
+  become_method: sudo
+  copy:
+    src: redis-default.conf
+    dest: /etc/redis/redis-default.conf
+  notify: restart redis
+
+- name: ensure that redis setup script is present
+  become: yes
+  become_method: sudo
+  copy:
+    src: redis-setup.sh
+    dest: /usr/local/bin/redis-setup
+    mode: 0755

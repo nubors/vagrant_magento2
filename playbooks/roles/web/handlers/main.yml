@@ -1,0 +1,10 @@
+---
+- name: reload apache
+  become: yes
+  become_method: sudo
+  service: name=apache2 state=restarted
+
+- name: restart redis
+  become: yes
+  become_method: sudo
+  service: name=redis-server state=restarted
