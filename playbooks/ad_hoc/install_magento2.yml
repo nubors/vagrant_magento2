@@ -1,0 +1,14 @@
+---
+- name: task to install magento2 after cloning the composer codebase
+  hosts: all
+  user: vagrant
+  vars_files:
+    - vars/ad_hoc_general.yml
+  tasks:
+  - name: install composer dependencies
+    composer: command=install working_dir=/srv/www/example.com/public_html
+
+  - name: install magento 2 via cli utility
+    command: bin/magento setup:install --backend-frontname=admin --session-save=files --db-host=127.0.0.1 --db-name=example --db-user=example --db-password=example --base-url=http://example.com/ --language=en_US --timezone=America/Chicago --currency=USD --use-rewrites=1 --admin-use-security-key=1 --admin-user={{ admin['username'] }} --admin-password={{ admin['password'] }} --admin-firstname={{ admin['firstname'] }} --admin-lastname={{ admin['lastname'] }} --admin-email={{ admin['email'] }}
+    args:
+      chdir: /srv/www/example.com/public_html

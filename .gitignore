@@ -8,3 +8,4 @@ example.com/
 playbooks/hosts
 playbooks/group_vars/all.yml
 playbooks/roles/web/files/auth.json
+playbooks/ad_hoc/vars/ad_hoc_general.yml
