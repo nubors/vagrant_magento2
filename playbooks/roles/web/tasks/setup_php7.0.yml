@@ -10,6 +10,13 @@
   command: /opt/phpfarm/inst/php-7.0.6/bin/phpize
   args:
     chdir: /usr/lib/xdebug
+
+- name: ensure that updated php-config script is present
+  become: yes
+  become_method: sudo
+  copy:
+    src: php7.0-config
+    dest: /opt/phpfarm/inst/php-7.0.6/bin/php-config
   
 - name: run configure php7.0 xdebug compile step
   become: yes

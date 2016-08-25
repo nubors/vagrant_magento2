@@ -28,6 +28,13 @@
   command: /opt/phpfarm/inst/php-5.6.20/bin/phpize
   args:
     chdir: /usr/lib/xdebug
+
+- name: ensure that updated php-config script is present
+  become: yes
+  become_method: sudo
+  copy:
+    src: php5.6-config
+    dest: /opt/phpfarm/inst/php-5.6.20/bin/php-config
   
 - name: run configure php5.6 xdebug compile step
   become: yes
